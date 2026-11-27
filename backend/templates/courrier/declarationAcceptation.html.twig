@@ -1,5 +1,8 @@
 {% extends 'courrier/_base_courrier.html.twig' %}
 
+{% set signature = contexte.signature ?? null %}
+{% set estSignatureElectronique = dossier.estEligibleSignatureElectronique and signature is not null %}
+
 {% block style %}
     <style>
         body {
@@ -38,14 +41,6 @@
                         margin: 0 0 1.5cm 0;
                     }
 
-                    &.marge-plus {
-                        margin: 1.5cm 0 0 0;
-                    }
-
-                    &.marge-plus-plus {
-                        margin: 3cm 0 0 0;
-                    }
-
                     margin: 10pt 0;
                 }
 
@@ -53,6 +48,26 @@
                     display:inline-block;
                     width:12rem;
                     border-bottom:1px dotted #000;
+                }
+
+                #signature {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+
+                .visuel-signature {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+
+                    p {
+                        content: "Signature";
+                    }
+
+                    p,a {
+                        width: 8cm;
+                        height: 3cm;
+                    }
                 }
 
             }
@@ -82,61 +97,76 @@
 
         {% if dossier.estPersonneMorale %}
             <div class="fr-checkbox-group fr-col-10 fr-col-offset-1">
-                <input name="checkbox" id="champ-rib-personnel" type="checkbox"
-                       aria-describedby="champ-rib-personnel-messages">
+                <input name="checkbox" id="champ-rib-personnel" type="checkbox" {% if estSignatureElectronique %} checked="checked"{% endif %}>
                 <label class="fr-label" style="font-weight: bold;" for="champ-rib-personnel">sur le compte
                     {{ dossier.requerantPersonneMorale.libelleDe }}</label>
-                <div class="fr-messages-group" id="champ-rib-personnel-messages" aria-live="polite">
-                </div>
+                {% if signature.rib ?? null %}
+                    <span class="champ-a-remplir">{{ signature.rib }}</span>
+                {% endif %}
             </div>
 
+            {% if not estSignatureElectronique %}
             <p>
                 <i style="font-size: 9pt;">(joindre impérativement un RIB d’un compte courant et une copie de la carte d’identité recto-verso ou
                     du
                     passeport en cours de validité)</i>
             </p>
+            {% endif %}
         {% else %}
             <div class="fr-checkbox-group fr-col-10 fr-col-offset-1">
-                <input name="checkbox" id="champ-rib-personnel" type="checkbox"
-                       aria-describedby="champ-rib-personnel-messages">
-                <label class="fr-label" style="font-weight: bold;" for="champ-rib-personnel">sur mon compte
-                    nominatif </label>
-                <div class="fr-messages-group" id="champ-rib-personnel-messages" aria-live="polite">
-                </div>
+                <input name="checkbox" id="champ-rib-personnel" type="checkbox" {% if estSignatureElectronique %} checked="checked"{% endif %}>
+                <label class="fr-label" style="font-weight: bold;" for="champ-rib-personnel">sur mon compte nominatif </label>
             </div>
 
+            {% if not estSignatureElectronique %}
             <p>
                 <i style="font-size: 9pt;">(joindre impérativement un RIB d’un compte courant et une copie de la carte d’identité recto-verso ou
                     du
                     passeport en cours de validité)</i>
             </p>
+            {% endif %}
         {% endif %}
 
         <div class="fr-checkbox-group fr-col-10 fr-col-offset-1">
-            <input name="checkbox" id="champ-rib-avocat" type="checkbox" aria-describedby="champ-rib-avocat-messages">
-            <label class="fr-label" style="font-weight: bold;" for="champ-rib-avocat">sur le compte CARPA de l’avocat,
-                Maître <span class="champ-a-remplir">&nbsp;</span></label>
-            <div class="fr-messages-group" id="champ-rib-avocat-messages" aria-live="polite">
-            </div>
+            <input name="checkbox" id="champ-rib-avocat" type="checkbox">
+            <label class="fr-label" style="font-weight: bold;" for="champ-rib-avocat">sur le compte CARPA de l’avocat, Maître <span class="champ-a-remplir">&nbsp;</span></label>
         </div>
 
+        {% if not estSignatureElectronique %}
         <p>
             <i style="font-size: 9pt;">
                 (joindre impérativement le RIB CARPA avec la référence de l’affaire et un accord de règlement sur le
                 compte CARPA)
             </i>
         </p>
+        {% endif %}
 
-        <p>Fait à <span class="champ-a-remplir">&nbsp;</span>,
-            le <span class="champ-a-remplir">&nbsp;</span>
+        <p>
+            {% if estSignatureElectronique %}
+                Fait à {{ signature.lieu }}
+            {% else %}
+                Fait à <span class="champ-a-remplir">&nbsp;</span>, le <span class="champ-a-remplir">&nbsp;</span>
+            {% endif %}
+
         </p>
 
 
-        <p style="margin-bottom:5rem;">Signature</p>
+        <div id="signature">
+            <div class="visuel-signature">
+                {% if estSignatureElectronique %}
+                    <a href="objet://visuel-signature">
+                    </a>
+                {% else %}
+                    <p></p>
+                {% endif %}
+            </div>
 
-        <p>La déclaration d’acceptation doit être retournée via votre espace personnel.</p>
+            {% if not estSignatureElectronique %}
+            <p>La déclaration d’acceptation doit être retournée via votre espace personnel.</p>
+            {% endif %}
 
-        <p><u>Référence à rappeler</u> :{{ dossier.reference }}</p>
+            <p><u>Référence à rappeler</u> :{{ dossier.reference }}</p>
+        </div>
     </div>
 
 {% endblock pages %}

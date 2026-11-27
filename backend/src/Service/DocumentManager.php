@@ -198,8 +198,14 @@ class DocumentManager
         );
     }
 
-    public function generer(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?MotifRejetBrisPorte $motifRejet = null): Document
-    {
+    public function generer(
+        Dossier $dossier,
+        DocumentType $type,
+        ?float $montantIndemnisation = null,
+        ?MotifRejetBrisPorte $motifRejet = null,
+        array $contexte = [],
+        bool $extraireObjets = false,
+    ): Document {
         if (!$type->estEditableAgent()) {
             throw new \LogicException("Les documents de type '$type->value' ne sont pas éditables");
 
@@ -210,10 +216,11 @@ class DocumentManager
                 $this->genererCorps($dossier, $type, $montantIndemnisation, $motifRejet)
             )->setMetaDonnees(array_merge(
                 $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation, 'indemnisation' => true] : [],
-                $motifRejet ? ['motifRejet' => $motifRejet->value, 'indemnisation' => false] : []
+                $motifRejet ? ['motifRejet' => $motifRejet->value, 'indemnisation' => false] : [],
+                $contexte
             ));
 
-        $document = $this->imprimanteCourrier->imprimerDocument($document)
+        $document = $this->imprimanteCourrier->imprimerDocument($document, $extraireObjets)
             ->setOriginalFilename($type->nommerFichier($dossier));
 
         $this->em->persist($document);

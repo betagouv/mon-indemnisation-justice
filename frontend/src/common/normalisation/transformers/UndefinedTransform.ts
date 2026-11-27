@@ -1,5 +1,10 @@
 import { Transform } from "class-transformer";
 
+/**
+ * Convertit un objet _null_ en _undefined_.
+ *
+ * @constructor
+ */
 export default function UndefinedTransform() {
   const toClass = Transform(
     ({ value }: { value: any | undefined | null }) => {

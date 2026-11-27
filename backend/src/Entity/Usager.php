@@ -60,7 +60,7 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected bool $isPersonneMorale = false;
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
-    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    #[ORM\OrderBy(['dateCreation' => \SortDirection::Ascending])]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 

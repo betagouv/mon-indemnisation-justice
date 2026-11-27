@@ -13,6 +13,7 @@ import { PersonnePhysique } from "./PersonnePhysique";
 import { PieceJointe } from "./PieceJointe.ts";
 import { type RapportAuLogement } from "./RapportAuLogement";
 import { Usager } from "./Usager";
+import { RequeteSignature } from "@/apps/requerant/models/RequeteSignature.ts";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
@@ -62,6 +63,9 @@ export abstract class BaseDossier {
   }
 }
 
+/**
+ * @see backend/src/Api/Requerant/Dossier/Dto/DossierDto.php
+ */
 export class Dossier extends BaseDossier {
   // '`Usager` = `Requerant`
   initiePar!: Usager;
@@ -91,6 +95,9 @@ export class Dossier extends BaseDossier {
   montantIndemnisation?: number;
   idTestEligibilite?: number;
   idDeclarationFDO?: string;
+  estEligibleSignatureElectronique: boolean = false;
+  @Type(() => RequeteSignature)
+  requeteSignature?: RequeteSignature;
 
   public getRequerantPersonne(): Personne | undefined {
     return this.estPersonneMorale

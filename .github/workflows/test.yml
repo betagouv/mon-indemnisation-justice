@@ -208,6 +208,11 @@ jobs:
     env:
       APP_ENV: test
       APP_SECRET: bafc23a0315b735289c499a886798934
+      # Aucun hub Mercure en CI : l'URL est fictive (seules les publications la contactent, et leurs erreurs sont
+      # interceptées). `localhost` correspond au domaine des requêtes, pour que le cookie d'abonnement soit posé
+      MERCURE_URL: http://localhost/.well-known/mercure
+      MERCURE_PUBLIC_URL: http://localhost/.well-known/mercure
+      MERCURE_JWT_SECRET: mercure-test-cle-secrete-hs256-0123456789
       APP_DEBUG: false
       DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
       PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
@@ -366,6 +371,11 @@ jobs:
       CI: 1
       APP_ENV: test
       APP_SECRET: bafc23a0315b735289c499a886798934
+      # Aucun hub Mercure en CI : l'URL est fictive (seules les publications la contactent, et leurs erreurs sont
+      # interceptées). `localhost` correspond au domaine des requêtes, pour que le cookie d'abonnement soit posé
+      MERCURE_URL: http://localhost/.well-known/mercure
+      MERCURE_PUBLIC_URL: http://localhost/.well-known/mercure
+      MERCURE_JWT_SECRET: mercure-test-cle-secrete-hs256-0123456789
       APP_DEBUG: false
       DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
       PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test

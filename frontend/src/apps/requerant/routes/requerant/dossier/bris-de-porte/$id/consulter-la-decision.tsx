@@ -4,25 +4,22 @@ import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
-import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { createFileRoute, notFound, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { RefObject, useCallback, useRef, useState } from "react";
-
-const signatureModal = createModal({
-  id: "modale-signature-dossier",
-  isOpenedByDefault: false,
-});
-
-const urlDocumentRequerant = (document: Document) =>
-  `/requerant/document/${document.id}/${document.filename}`;
+import React, { useEffect, useMemo, useState } from "react";
+import { SignatureManuelleModale } from "@/apps/requerant/composants/signature/SignatureManuelleModale.tsx";
+import { SignatureElectroniqueModale } from "@/apps/requerant/composants/signature/SignatureElectroniqueModale.tsx";
+import {
+  DeclarationAcceptation,
+  estDeclarationAConsulter,
+  etatDeclarationAcceptation,
+} from "@/apps/requerant/composants/signature/DeclarationAcceptation.tsx";
+import { convertirEnEuros } from "@common/services/devise.ts";
+import { useAbonnementMercure } from "@common/hooks/useAbonnementMercure.ts";
+import { plainToInstance } from "class-transformer";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
@@ -58,6 +55,8 @@ export const Route = createFileRoute(
   },
 });
 
+type Onglet = "decision" | "declaration";
+
 function ConsulterDecisionBrisPorte() {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
@@ -67,44 +66,57 @@ function ConsulterDecisionBrisPorte() {
   const routeur = useRouter<typeof RouteurRequerant>();
 
   // Récupérer la référence depuis le paramètre de la route
-  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
+  const { dossier: dossierCharge }: { dossier: Dossier } =
+    Route.useLoaderData();
 
-  // Références vers les conteneurs DOM de chacune des étapes du formulaire de signature
-  const refEtapes: RefObject<HTMLDivElement | null>[] = [
-    useRef<HTMLDivElement | null>(null),
-    useRef<HTMLDivElement | null>(null),
-    useRef<HTMLDivElement | null>(null),
-  ];
-  // Numéro de l'étape active sur le formulaire de signature
-  const [etape, setEtape] = useState(0);
+  // Le dossier affiché, rechargé par le loader ou mis à jour en direct par Mercure
+  const [dossier, setDossier] = useState<Dossier>(dossierCharge);
+  useEffect(() => setDossier(dossierCharge), [dossierCharge]);
 
-  // Fichier signé à téléverser
-  const [fichierSigne, setFichierSigne]: [
-    File | undefined,
-    (fichierSigne: File) => void,
-  ] = useState<File>();
+  // Recevoir le dossier à jour dès qu'il change (ex : signature électronique validée). Le cookie d'abonnement est
+  // posé par l'API au chargement du dossier (cf. `DiffuseurDossierRequerant`)
+  useAbonnementMercure<object>(`requerant/dossier/${dossier.id}`, (donnees) => {
+    setDossier(plainToInstance(Dossier, donnees));
+  });
 
-  const estTailleFichierOk = (fichier?: File) =>
-    !!fichier && fichier.size < 10 * 1024 * 1024;
-  const estTypeFichierOk = (fichier?: File) =>
-    !!fichier && ["application/pdf"].includes(fichier.type);
+  const etatDeclaration = useMemo(
+    () => etatDeclarationAcceptation(dossier),
+    [dossier],
+  );
 
-  // Indique si l'envoi du fichier, via l'API, est en cours
-  const [sauvegarderEnCours, setSauvegarderEnCours]: [
-    boolean,
-    (mode: boolean) => void,
-  ] = useState(false);
+  // Onglet sélectionné, mémorisé pour survivre aux mises à jour du dossier (Mercure, rechargement par le routeur).
+  // Au chargement, la déclaration est affichée si une signature électronique est en cours, ou fermée et à recommencer
+  const [ongletSelectionne, setOngletSelectionne] = useState<Onglet>(() =>
+    estDeclarationAConsulter(etatDeclarationAcceptation(dossierCharge))
+      ? "declaration"
+      : "decision",
+  );
 
-  const signerCourrier = useCallback(async () => {
-    if (fichierSigne) {
-      setSauvegarderEnCours(true);
-      await dossierManager.accepter(dossier.id, fichierSigne);
-      routeur.invalidate();
+  // L'onglet de la déclaration peut ne pas (ou plus) exister : on se rabat alors sur celui de la décision
+  const onglet: Onglet =
+    etatDeclaration === "absente" ? "decision" : ongletSelectionne;
 
-      signatureModal.close();
-      setSauvegarderEnCours(false);
-    }
-  }, [dossier.id, fichierSigne]);
+  const onglets = useMemo(
+    () => [
+      {
+        tabId: "decision",
+        label: dossier.estAccepte
+          ? "Proposition d'indemnisation"
+          : "Courrier de rejet",
+        iconId: "fr-icon-checkbox-circle-line" as FrIconClassName,
+      },
+      ...(etatDeclaration !== "absente"
+        ? [
+            {
+              tabId: "declaration",
+              label: "Déclaration d'acceptation",
+              iconId: "fr-icon-chat-check-line" as FrIconClassName,
+            },
+          ]
+        : []),
+    ],
+    [dossier.estAccepte, etatDeclaration],
+  );
 
   return (
     <div className="fr-container">
@@ -123,21 +135,29 @@ function ConsulterDecisionBrisPorte() {
                 <span className="fr-text--bold">
                   montant de l’indemnisation proposé
                 </span>
-                est de{" "}
+                &nbsp;est de{" "}
                 <span className="fr-text--bold">
-                  {(dossier.montantIndemnisation as number).toLocaleString()}
+                  {convertirEnEuros(dossier.montantIndemnisation as number)}
                 </span>
                 . Pour{" "}
                 <span className="fr-text--bold">accepter la proposition</span>{" "}
                 et
-                <span className="fr-text--bold">déclencher le versement</span>,
-                veuillez cliquer sur le bouton{" "}
+                <span className="fr-text--bold">
+                  &nbsp;déclencher le versement
+                </span>
+                , veuillez cliquer sur le bouton{" "}
                 <span className="fr-text--bold">
                   « Accepter la proposition »
                 </span>
-                , ensuite{" "}
-                <span className="fr-text--bold">signer et téléverser</span> la
-                déclaration d’acceptation ci-jointe en suivant les instructions.
+                , pour ensuite{" "}
+                <span className="fr-text--bold">
+                  signer
+                  {!dossier.estEligibleSignatureElectronique && (
+                    <> et téléverser</>
+                  )}
+                </span>{" "}
+                la déclaration d’acceptation ci-jointe en suivant les
+                instructions.
               </p>
             </>
           ) : (
@@ -161,275 +181,48 @@ function ConsulterDecisionBrisPorte() {
                 />
               </div>
             </>
+          ) : dossier.estEligibleSignatureElectronique ? (
+            <SignatureElectroniqueModale
+              dossier={dossier}
+              onDemarrer={async (contexte) => {
+                await dossierManager.demarrerSignature(dossier.id, contexte);
+                await routeur.invalidate();
+                // Afficher la signature électronique (ou sa préparation) dès son démarrage
+                setOngletSelectionne("declaration");
+              }}
+            />
           ) : (
-            <>
-              <div className="fr-col-lg-3 fr-col-offset-lg-9">
-                <ul className="fr-btns-group fr-btns-group--right">
-                  <li>
-                    <button
-                      className="fr-btn"
-                      onClick={() => signatureModal.open()}
-                    >
-                      Accepter la proposition
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <signatureModal.Component
-                title="Signature du dossier"
-                iconId={"fr-icon-ball-pen-line"}
-                size={"large"}
-              >
-                <Stepper
-                  currentStep={etape + 1}
-                  stepCount={refEtapes.length}
-                  title={refEtapes
-                    .at(etape)
-                    ?.current?.getAttribute("data-titre")}
-                />
-
-                <div
-                  hidden={etape != 0}
-                  ref={refEtapes.at(0)}
-                  data-titre="Récupérer le document"
-                >
-                  <p>
-                    Pour accepter la proposition d'indemnisation, vous allez
-                    devoir signer <i>électroniquement</i> la déclaration
-                    d'acceptation, figurant en annexe du courrier. Pour cela
-                    nous recommandons d'utiliser un ordinateur.
-                  </p>
-
-                  <p>
-                    La première étape consiste à enregistrer le document sur
-                    votre disque-dur en cliquant sur le bouton "Télécharger le
-                    formulaire d'acceptation" ci-dessous, avant de pouvoir
-                    passer à l'étape suivante.
-                  </p>
-
-                  <div className="fr-input-group fr-mb-3w">
-                    <a
-                      className="fr-link fr-link--download"
-                      download={`Lettre décision dossier ${dossier.reference}`}
-                      href={dossier.getFormulaireDeclarationAcceptation()?.url}
-                    >
-                      Télécharger le formulaire d'acceptation
-                    </a>
-                  </div>
-
-                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                        type="button"
-                        onClick={() => {
-                          signatureModal.close();
-                          setEtape(0);
-                        }}
-                      >
-                        Annuler
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--primary"
-                        type="button"
-                        onClick={() => setEtape(1)}
-                      >
-                        Étape suivante
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-
-                <div
-                  hidden={etape != 1}
-                  className={""}
-                  ref={refEtapes.at(1)}
-                  data-titre="Remplir et signer le formulaire"
-                >
-                  <p>
-                    Pour compléter le formulaire, imprimez le document que vous
-                    venez de télécharger, remplissez le avec les informations
-                    concernant votre état civil ainsi que vos coordonnées
-                    bancaires *à jour* et signez-le.
-                  </p>
-
-                  <p>
-                    Une fois dûment complété, scannez-le pour récupérer la
-                    version électronique sous forme de fichier au format PDF et
-                    passez à l'étape suivante. Nous vous conseillons{" "}
-                    <a
-                      href="https://leclaireur.fnac.com/article/cp64397-comment-scanner-un-document-avec-votre-imprimante-ou-votre-telephone/"
-                      target="_blank"
-                      title="Article sur le site de la Fnac: comment scanner un document ?"
-                    >
-                      ce petit guide proposé par la Fnac
-                    </a>
-                    &nbsp;si vous souhaitez en savoir plus sur comment faire.
-                  </p>
-
-                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                        type="button"
-                        onClick={() => {
-                          signatureModal.close();
-                          setEtape(0);
-                        }}
-                      >
-                        Annuler
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--secondary"
-                        type="button"
-                        onClick={() => setEtape(0)}
-                      >
-                        Étape précédente
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--primary"
-                        type="button"
-                        onClick={() => setEtape(2)}
-                      >
-                        Étape suivante
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <div
-                  hidden={etape != 2}
-                  className={""}
-                  ref={refEtapes.at(2)}
-                  data-titre="Transmettre le document signé"
-                >
-                  <p>
-                    Maintenant que la déclaration est dûment remplie et signée,
-                    il ne vous reste plus qu'à la transmettre au bureau du
-                    précontentieux en la téléversant sur la plateforme.
-                  </p>
-                  <p>
-                    Sélectionnez ci-dessous le fichier que vous venez d'éditer,
-                    puis validez en cliquant sur le bouton "Envoyer".
-                  </p>
-                  <Upload
-                    label="Téléverser le fichier pour accepter la proposition et être
-                    indémnisé"
-                    hint="Taille maximale : 10 Mo, format pdf uniquement."
-                    state={
-                      !fichierSigne ||
-                      (estTypeFichierOk(fichierSigne) &&
-                        estTailleFichierOk(fichierSigne))
-                        ? "default"
-                        : "error"
-                    }
-                    stateRelatedMessage={
-                      !estTailleFichierOk(fichierSigne)
-                        ? "Le fichier dépasse les 10 Mo"
-                        : "Le fichier n'est pas au format PDF"
-                    }
-                    nativeInputProps={{
-                      accept: "application/pdf",
-                      onChange: (e) => {
-                        if (e.target.files?.length) {
-                          setFichierSigne(e.target.files?.item(0) as File);
-                        }
-                      },
-                    }}
-                    multiple={false}
-                  />
-
-                  {/*
-                  {erreurEnvoi && (
-                    <Alert
-                      className="fr-my-2w"
-                      severity="error"
-                      title="Erreur lors du téléversement"
-                      description={erreurEnvoi}
-                      closable={true}
-                    />
-                  )}
-                  */}
-
-                  <ButtonsGroup
-                    inlineLayoutWhen="always"
-                    alignment="right"
-                    buttonsIconPosition="right"
-                    buttonsSize="small"
-                    buttons={[
-                      {
-                        children: "Annuler",
-                        priority: "tertiary no outline",
-                        disabled: sauvegarderEnCours,
-                        onClick: () => {
-                          signatureModal.close();
-                          setEtape(0);
-                        },
-                      },
-                      {
-                        children: "Étape précédente",
-                        priority: "secondary",
-                        disabled: sauvegarderEnCours,
-                        onClick: () => setEtape(1),
-                      },
-                      {
-                        children: "Envoyer",
-                        priority: "primary",
-                        disabled:
-                          sauvegarderEnCours ||
-                          !estTailleFichierOk(fichierSigne) ||
-                          !estTypeFichierOk(fichierSigne),
-                        onClick: () => signerCourrier(),
-                      },
-                    ]}
-                  />
-                </div>
-              </signatureModal.Component>
-            </>
+            <SignatureManuelleModale
+              dossier={dossier}
+              onSigne={async (fichierSigne: File) => {
+                await dossierManager.accepter(dossier.id, fichierSigne);
+                await routeur.invalidate();
+                // Afficher la déclaration signée qui vient d'être déposée
+                setOngletSelectionne("declaration");
+              }}
+            />
           ))}
 
         <div className="fr-col-12">
           <Tabs
-            tabs={[
-              {
-                label: dossier.estAccepte
-                  ? "Proposition d'indemnisation"
-                  : "Courrier de rejet",
-                iconId: "fr-icon-checkbox-circle-line",
-                isDefault: true,
-                content: dossier.getCourrierDecision() && (
-                  <AfficherPieceJointe
-                    pieceJointe={dossier.getCourrierDecision() as PieceJointe}
-                    telecharger={false}
-                  />
-                ),
-              },
-              ...(dossier.estAccepte
-                ? [
-                    {
-                      label: "Déclaration d'acceptation",
-                      isDefault: false,
-                      iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content:
-                        dossier.getFormulaireDeclarationAcceptation() && (
-                          <AfficherPieceJointe
-                            pieceJointe={
-                              dossier.getDeclarationAcceptation() ??
-                              (dossier.getFormulaireDeclarationAcceptation() as PieceJointe)
-                            }
-                            telecharger={false}
-                          />
-                        ),
-                    },
-                  ]
-                : []),
-            ]}
-          />
+            tabs={onglets}
+            selectedTabId={onglet}
+            onTabChange={(tabId) => setOngletSelectionne(tabId as Onglet)}
+          >
+            {onglet === "declaration" ? (
+              <DeclarationAcceptation
+                dossier={dossier}
+                etat={etatDeclaration}
+              />
+            ) : (
+              dossier.getCourrierDecision() && (
+                <AfficherPieceJointe
+                  pieceJointe={dossier.getCourrierDecision() as PieceJointe}
+                  telecharger={false}
+                />
+              )
+            )}
+          </Tabs>
         </div>
       </div>
     </div>

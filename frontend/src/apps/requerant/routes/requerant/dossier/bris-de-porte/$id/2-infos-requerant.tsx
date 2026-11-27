@@ -27,7 +27,7 @@ import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { useForm, useStore } from "@tanstack/react-form";
+import { useForm, useSelector } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
@@ -151,7 +151,7 @@ function Etape2InfosRequerant() {
     },
   });
 
-  const { estPersonneMorale, paysNaissance } = useStore(
+  const { estPersonneMorale, paysNaissance } = useSelector(
     formulaire.store,
     (state) => ({
       estPersonneMorale: state.values.estPersonneMorale,

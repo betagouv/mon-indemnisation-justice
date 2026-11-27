@@ -41,6 +41,33 @@ sécurité, exclu du cache de CleverCloud pour ne pas risquer d'être exécuté 
 * `CC_PRE_RUN_HOOK` : pointe vers le script `clevercloud/hooks/pre_run.sh` préparé à l'étape précédente
 * `CC_WEBROOT` : informe FrankenPHP que le point d'entrée se situe sous `/backend/public`
 * `CC_RUN_COMMAND` : précise comment est configuré FrankenPHP
+* `CC_WORKER_COMMAND` : lance le worker Symfony Messenger, relancé automatiquement par CleverCloud
+(`php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M`)
+* `MERCURE_JWT_SECRET`, `MERCURE_PUBLISHER_JWT_KEY` et `MERCURE_SUBSCRIBER_JWT_KEY` : une même clé aléatoire d'au
+moins 32 caractères (`openssl rand -hex 32`), propre à chaque environnement, qui signe les JWT du hub Mercure activé
+dans le `Caddyfile`. Sans elles, le hub démarre mais refuse toute publication et tout abonnement
+* `MERCURE_URL` : URL interne du hub, utilisée pour publier (`http://localhost:8080/.well-known/mercure`)
+* `MERCURE_PUBLIC_URL` : URL publique du hub (`https://<domaine>/.well-known/mercure`), qui doit être sur le domaine
+du site pour que le cookie d'abonnement soit transmis
+
+#### Diffusion en direct des dossiers (Mercure)
+
+Le requérant reçoit en direct les changements de ses dossiers, par exemple la validation de la signature électronique
+de la déclaration d'acceptation :
+
+* chaque dossier a son topic Mercure, `requerant/dossier/{id}` (cf. `DiffuseurDossierRequerant::topic()`) ;
+* à chaque consultation d'un dossier (`GET /api/requerant/dossier/bris-de-porte/{reference}`), l'API pose le cookie
+  `mercureAuthorization` : un JWT qui autorise l'abonnement aux topics de **tous** les dossiers de l'usager. Comme il
+  n'existe qu'un cookie par hub, un dossier ouvert dans un autre onglet garde ainsi son autorisation ;
+* les mises à jour sont publiées par le worker (`DiffuseurDossierRequerant::diffuserDossier()`), en privé : seul un
+  abonné dont le JWT liste le topic les reçoit. L'identifiant (entier) du dossier peut donc figurer dans le topic sans
+  risque ;
+* côté frontend, le hook `useAbonnementMercure` (`frontend/src/common/hooks/`) s'abonne au topic et remplace le
+  dossier affiché par celui reçu.
+
+> [!WARNING]
+> Le hub Mercure intégré à FrankenPHP conserve ses évènements localement à chaque instance : avec plusieurs instances,
+> une mise à jour publiée par le worker d'une instance n'atteint pas les navigateurs connectés à une autre.
 
 > [!NOTE]  
 > Le déploiement s'appuie [l'application CLI `clever-tools`](https://github.com/CleverCloud/clever-tools) qui pourrait de

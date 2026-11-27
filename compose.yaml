@@ -41,8 +41,27 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+  # RabbitMQ : transport de Symfony Messenger, interface d'administration sur http://localhost:15672
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    hostname: rabbitmq
+    # Utilisateur (`precondev` / `precondev`), vhosts (`dev`, `test`), exchanges et files provisionnés au démarrage
+    # depuis `.docker/rabbitmq/conf/definitions.json`
+    volumes:
+      - ./.docker/rabbitmq/data:/var/lib/rabbitmq:rw
+      - ./.docker/rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/conf.d/20-definitions.conf:ro
+      - ./.docker/rabbitmq/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   # The Symfony app
-  symfony: &sf
+  symfony:
     hostname: symfony
     build:
       context: .
@@ -57,27 +76,97 @@ services:
       - APP_ENV=dev
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
-      - SERVER_NAME=:80
+      # Port d'écoute du `Caddyfile` (8080 par défaut, comme sur CleverCloud)
+      - CC_FRANKENPHP_PORT=80
       - HTTPS=true;
       - REQUEST_SCHEME=https
       - INSTANCE_NUMBER=0
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
+      - LEGALYSPACE_BASE_APP_URI=https://esign.ppr.legalyspace.com
+      - MESSENGER_TRANSPORT_DSN=amqp://precondev:precondev@rabbitmq:5672/dev/messages
+      # Hub Mercure intégré à FrankenPHP, déclaré dans le `Caddyfile` (mode de compatibilité, comme en prod)
+      - MERCURE_URL=http://symfony/.well-known/mercure
+      - MERCURE_PUBLIC_URL=https://mon-indemnisation.justice.gouv.dev/.well-known/mercure
+      - MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+      - MERCURE_PUBLISHER_JWT_KEY=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+      - MERCURE_SUBSCRIBER_JWT_KEY=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+    # Même `Caddyfile` qu'en test et en prod : `php-server --mercure` lance un hub en mode « moderne » (protocole
+    # 1.0) qui refuse les JWT au format historique émis par l'application
+    command: [ "frankenphp", "run", "--config", "/app/Caddyfile" ]
     restart: always
     depends_on:
       - postgres
       - mailpit
+      - rabbitmq
       - vite
       - idconnect
+      - nginx
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
       - ./frontend/public/preview:/app/public/preview
       - .docker/php/fichiers:/app/fichiers
-      - /app/vendor
+      # Volumes nommés, partagés avec le `worker`
+      - symfony_vendor:/app/vendor
+      - symfony_node_modules:/app/node_modules
+      # Navigateur installé par `demarrage.sh` (`npx puppeteer browsers install`), partagé avec le `worker`
+      - puppeteer_cache:/root/.cache/puppeteer
       - /app/var
-      - /app/node_modules
     ports:
       - "8001:80"
+    # Le conteneur n'est sain qu'une fois `demarrage.sh` terminé (dépendances installées, migrations jouées) et le
+    # serveur à l'écoute
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -o /dev/null http://localhost/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5m
+
+  # Consommateur Symfony Messenger : traite les messages asynchrones (ex : évènements de signature électronique)
+  worker:
+    hostname: worker
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+      target: dev
+      args:
+        - APP_ENV=dev
+        - APP_DEBUG=true
+    environment:
+      - APP_ENV=dev
+      - SYMFONY_DEPRECATIONS_HELPER=disabled
+      - MAILPIT_URL=http://mailpit:8025
+      - HTTPS=true;
+      - REQUEST_SCHEME=https
+      - INSTANCE_NUMBER=0
+      - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
+      - LEGALYSPACE_BASE_APP_URI=https://esign.ppr.legalyspace.com
+      - MESSENGER_TRANSPORT_DSN=amqp://precondev:precondev@rabbitmq:5672/dev/messages
+      - MERCURE_URL=http://symfony/.well-known/mercure
+      - MERCURE_PUBLIC_URL=https://mon-indemnisation.justice.gouv.dev/.well-known/mercure
+      - MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+    # Pas de `demarrage.sh` : dépendances et migrations sont gérées par le conteneur `symfony`
+    entrypoint: [ ]
+    command: [ "php", "bin/console", "messenger:consume", "async", "-vv", "--time-limit=3600", "--memory-limit=256M" ]
+    restart: always
+    healthcheck:
+      test: [ "NONE" ]
+    depends_on:
+      symfony:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+      - .docker/php/fichiers:/app/fichiers
+      - symfony_vendor:/app/vendor
+      - symfony_node_modules:/app/node_modules
+      # Navigateur installé par `demarrage.sh` (`npx puppeteer browsers install`), partagé avec le `worker`
+      - puppeteer_cache:/root/.cache/puppeteer
+      - /app/var
 
   test:
     hostname: test
@@ -92,6 +181,13 @@ services:
         - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
         - VITE_TELEPHONE_SERRURIER=${TELEPHONE_SERRURIER:-0123456789}
+    depends_on:
+      - postgres
+      - mailpit
+      - rabbitmq
+      - idconnect
+      - nginx
+      - documenso
     environment:
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
@@ -101,6 +197,13 @@ services:
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/test
       - CC_FRANKENPHP_PORT=80
       - APP_HOME=/app
+      - MESSENGER_TRANSPORT_DSN=amqp://precondev:precondev@rabbitmq:5672/test/messages
+      # Hub Mercure activé par le `Caddyfile`
+      - MERCURE_URL=http://localhost/.well-known/mercure
+      - MERCURE_PUBLIC_URL=https://mon-indemnisation.justice.gouv.test/.well-known/mercure
+      - MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+      - MERCURE_PUBLISHER_JWT_KEY=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
+      - MERCURE_SUBSCRIBER_JWT_KEY=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test
@@ -154,6 +257,69 @@ services:
     volumes:
       - ./.docker/idconnect:/app/data/
 
+  # Documenso: fournisseur de signature électronique local (alternative à LegalySpace), interface sur http://localhost:8082
+  documenso:
+    image: documenso/documenso:v2.20.0
+    hostname: documenso
+    restart: unless-stopped
+    depends_on:
+      documenso-postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      PORT: 3000
+      NEXTAUTH_SECRET: ${DOCUMENSO_NEXTAUTH_SECRET:-documenso-dev-nextauth-secret}
+      NEXT_PRIVATE_ENCRYPTION_KEY: ${DOCUMENSO_ENCRYPTION_KEY:-documenso-dev-encryption-key-0123456789}
+      NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY: ${DOCUMENSO_ENCRYPTION_SECONDARY_KEY:-documenso-dev-encryption-key-9876543210}
+      # URL publique, utilisée dans les liens des courriels de signature
+      NEXT_PUBLIC_WEBAPP_URL: http://localhost:8082
+      NEXT_PRIVATE_INTERNAL_WEBAPP_URL: http://localhost:3000
+      NEXT_PRIVATE_DATABASE_URL: postgresql://documenso:documenso@documenso-postgres:5432/documenso
+      # Documents stockés en base de données plutôt que sur S3
+      NEXT_PUBLIC_UPLOAD_TRANSPORT: database
+      # Envoi des emails via Mailpit
+      NEXT_PRIVATE_SMTP_TRANSPORT: smtp-auth
+      NEXT_PRIVATE_SMTP_HOST: mailpit
+      NEXT_PRIVATE_SMTP_PORT: 1025
+      NEXT_PRIVATE_SMTP_UNSAFE_IGNORE_TLS: "true"
+      NEXT_PRIVATE_SMTP_FROM_NAME: Documenso
+      NEXT_PRIVATE_SMTP_FROM_ADDRESS: documenso@mon-indemnisation.justice.gouv.dev
+      # Certificat de scellement des documents signés, auto-signé et généré au premier démarrage
+      NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH: /opt/documenso/certificat/cert.p12
+      NEXT_PRIVATE_SIGNING_PASSPHRASE: documenso
+      # Autorise les webhooks vers les conteneurs Symfony, refusés par défaut car résolus en adresses privées
+      NEXT_PRIVATE_WEBHOOK_SSRF_BYPASS_HOSTS: symfony,test
+    command:
+      - sh
+      - -c
+      - |
+        if [ ! -f /opt/documenso/certificat/cert.p12 ]; then
+          openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=Documenso dev" -keyout /tmp/cle.pem -out /tmp/cert.pem
+          openssl pkcs12 -export -inkey /tmp/cle.pem -in /tmp/cert.pem -out /opt/documenso/certificat/cert.p12 -passout pass:documenso
+          rm /tmp/cle.pem /tmp/cert.pem
+        fi
+        exec sh start.sh
+    volumes:
+      - ./.docker/documenso/certificat:/opt/documenso/certificat
+    ports:
+      - "8082:3000"
+
+  documenso-postgres:
+    image: postgres:15.8-alpine
+    hostname: documenso-postgres
+    environment:
+      POSTGRES_DB: documenso
+      POSTGRES_USER: documenso
+      POSTGRES_PASSWORD: documenso
+    volumes:
+      - ./.docker/documenso/postgres:/var/lib/postgresql/data:rw
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U documenso -d documenso" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
   playwright:
     profiles:
       - playwright
@@ -187,3 +353,8 @@ services:
       - "127.0.0.1:4040:4040"
     profiles:
       - webhooks
+
+volumes:
+  symfony_vendor:
+  symfony_node_modules:
+  puppeteer_cache:

@@ -57,7 +57,7 @@ class Dossier
     protected ?EtatDossier $etatDossier = null;
 
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
-    #[ORM\OrderBy(['dateEntree' => 'ASC'])]
+    #[ORM\OrderBy(['dateEntree' => \SortDirection::Ascending])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
@@ -81,12 +81,30 @@ class Dossier
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
+    /**
+     * Requête de signature actuelle, la plus récente de {@see $requetesSignatureRequerant}.
+     */
+    #[ORM\OneToOne(targetEntity: RequeteSignatureRequerant::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'requete_signature_actuelle_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    protected ?RequeteSignatureRequerant $requeteSignatureRequerant = null;
+
+    /**
+     * Historique des requêtes de signature : une nouvelle requête peut remplacer l'actuelle une fois celle-ci fermée
+     * (expirée ou annulée).
+     *
+     * @var Collection<RequeteSignatureRequerant>
+     */
+    #[ORM\OneToMany(targetEntity: RequeteSignatureRequerant::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['dateCreation' => \SortDirection::Ascending])]
+    protected Collection $requetesSignatureRequerant;
+
     public function __construct()
     {
         $this->brisPorte = new BrisPorte();
         $this->dateCreation = new \DateTimeImmutable();
         $this->piecesJointes = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
+        $this->requetesSignatureRequerant = new ArrayCollection([]);
     }
 
     #[ORM\PrePersist]
@@ -166,6 +184,11 @@ class Dossier
         return $this->estPersonneMorale() && null !== $this->requerantPersonneMorale?->getRepresentantLegal()->getNom() ?
             $this->requerantPersonneMorale?->getRepresentantLegal()
             : $this->requerantPersonnePhysique?->getPersonne();
+    }
+
+    public function getAdresseRequerant(): ?Adresse
+    {
+        return $this->estPersonneMorale() ? $this->requerantPersonneMorale->getAdresse() : $this->requerantPersonnePhysique->getAdresse();
     }
 
     public function getCourrielRequerant(): string
@@ -510,6 +533,48 @@ class Dossier
         $this->propositionIndemnisation = $propositionIndemnisation;
 
         return $this;
+    }
+
+    public function estEligibleSignatureElectronique(): bool
+    {
+        return DossierType::BRIS_PORTE === $this->type && !$this->estPersonneMorale();
+    }
+
+    public function getRequeteSignatureRequerant(): ?RequeteSignatureRequerant
+    {
+        return $this->requeteSignatureRequerant;
+    }
+
+    /**
+     * Rattache la requête de signature au dossier, l'ajoute à l'historique et en fait la requête actuelle.
+     */
+    public function ajouterRequeteSignatureRequerant(RequeteSignatureRequerant $requeteSignatureRequerant): Dossier
+    {
+        $requeteSignatureRequerant->setDossier($this);
+
+        if (!$this->requetesSignatureRequerant->contains($requeteSignatureRequerant)) {
+            $this->requetesSignatureRequerant->add($requeteSignatureRequerant);
+        }
+
+        $this->requeteSignatureRequerant = $requeteSignatureRequerant;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<RequeteSignatureRequerant>
+     */
+    public function getRequetesSignatureRequerant(): Collection
+    {
+        return $this->requetesSignatureRequerant;
+    }
+
+    /**
+     * Une (nouvelle) signature peut être démarrée s'il n'y en a pas encore, ou si l'actuelle est fermée.
+     */
+    public function peutDemarrerSignature(): bool
+    {
+        return null === $this->requeteSignatureRequerant || $this->requeteSignatureRequerant->estFermee();
     }
 
     public function getType(): DossierType
