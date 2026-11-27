@@ -3,11 +3,16 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React, { useState } from "react";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Parcours, useParcours } from "@common/composants/dsfr/Parcours";
-import { useForm } from "@tanstack/react-form";
 import { ContexteSignatureElectronique } from "@/apps/requerant/services/DossierManager.ts";
-import { z } from "zod";
-import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import { convertirEnEuros } from "@common/services/devise.ts";
+import { type ReferenceBancaire } from "@/apps/requerant/models/ReferenceBancaire.ts";
+import { EtapeReferenceBancaire } from "@/apps/requerant/composants/signature/EtapeReferenceBancaire.tsx";
+
+/**
+ * TODO : transmettre la référence bancaire saisie une fois le backend branché ; en attendant, un IBAN fictif (mais
+ * valide) est envoyé à l'API de démarrage de la signature.
+ */
+const IBAN_FACTICE = "FR7630006000011234567890189";
 
 const _modale = createModal({
   id: "modale-signature-electronique-dossier",
@@ -56,93 +61,6 @@ const EtapeIntro = ({
     />
   </>
 );
-
-const normaliserIban = (iban: string): string =>
-  iban.replace(/\s+/g, "").toUpperCase();
-
-const schemaChoixRib = z.object({
-  rib: z
-    .string({ error: "L'IBAN de l'avocat est requis" })
-    .trim()
-    .min(1, { error: "L'IBAN de l'avocat est requis" })
-    .refine(
-      (iban) => /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(normaliserIban(iban)),
-      { error: "L'IBAN saisi n'est pas valide" },
-    ),
-});
-
-const EtapeRib = ({
-  rib,
-  annuler,
-  etapeSuivante,
-}: {
-  rib: string;
-  annuler: () => void;
-  etapeSuivante: ({ rib }: { rib: string }) => void;
-}) => {
-  const formulaire = useForm({
-    defaultValues: {
-      rib,
-    },
-    validators: {
-      onSubmit: schemaChoixRib,
-    },
-    onSubmit: ({ value }) => {
-      etapeSuivante({ rib: normaliserIban(value.rib) });
-    },
-  });
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void formulaire.handleSubmit();
-      }}
-    >
-      <formulaire.Field
-        name="rib"
-        children={(champ) => (
-          <FormInput
-            label="RIB / IBAN "
-            hintText="Exemple : FR76 3000 6000 0112 3456 7890 189"
-            estRequis={true}
-            champ={champ}
-            nativeInputProps={{
-              maxLength: 42,
-              autoComplete: "off",
-              value: champ.state.value,
-              onChange: (e) => champ.handleChange(e.target.value),
-              onBlur: champ.handleBlur,
-            }}
-          />
-        )}
-      />
-
-      <ButtonsGroup
-        className="fr-mt-3w"
-        buttonsSize="small"
-        inlineLayoutWhen="always"
-        alignment="right"
-        buttons={[
-          {
-            children: "Annuler",
-            priority: "tertiary no outline",
-            onClick: annuler,
-          },
-          {
-            children: "Avancer vers l'étape suivante",
-            priority: "secondary",
-            nativeButtonProps: {
-              role: "submit",
-              type: "submit",
-            },
-          },
-        ]}
-      />
-    </form>
-  );
-};
 
 const EtapeConfirmation = ({
   sauvegardeEnCours,
@@ -208,9 +126,10 @@ export const SignatureElectroniqueModale = ({
   dossier: Dossier;
   onDemarrer: (contexte: ContexteSignatureElectronique) => Promise<void>;
 }) => {
-  const montant = 1245.87;
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
-  const [rib, setRib] = useState<string>("");
+  const [referenceBancaire, setReferenceBancaire] = useState<
+    ReferenceBancaire | undefined
+  >();
 
   const parcours = useParcours({
     INTRO: {
@@ -227,16 +146,17 @@ export const SignatureElectroniqueModale = ({
       ),
     },
     RIB: {
-      titre: "Choix du relevé d'identité bancaire",
+      titre: "Coordonnées bancaires",
       composant: ({ setEtape, suivante }) => (
-        <EtapeRib
-          rib={rib}
+        <EtapeReferenceBancaire
+          dossier={dossier}
+          referenceBancaire={referenceBancaire}
           annuler={() => {
             _modale.close();
             setEtape("INTRO");
           }}
-          etapeSuivante={({ rib }) => {
-            setRib(rib);
+          etapeSuivante={(referenceBancaire) => {
+            setReferenceBancaire(referenceBancaire);
             suivante();
           }}
         />
@@ -253,13 +173,13 @@ export const SignatureElectroniqueModale = ({
           }}
           etapePrecedente={precedente}
           confirmer={async () => {
-            if (!rib) {
+            if (!referenceBancaire) {
               setEtape("RIB");
               return;
             }
 
             setSauvegardeEnCours(true);
-            await onDemarrer({ rib });
+            await onDemarrer({ rib: IBAN_FACTICE });
             setSauvegardeEnCours(false);
             _modale.close();
           }}

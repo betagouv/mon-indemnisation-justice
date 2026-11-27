@@ -7,6 +7,10 @@ import {
   DossierManagerInterface,
 } from "@/apps/requerant/services/DossierManager.ts";
 import {
+  APIEtablissementBancaireManager,
+  EtablissementBancaireManagerInterface,
+} from "@/apps/requerant/services/EtablissementBancaireManager.ts";
+import {
   APIUsagerManager,
   UsagerManagerInterface,
 } from "@/apps/requerant/services/UsagerManager";
@@ -27,6 +31,13 @@ container
 container
   .bind<AdresseManagerInterface>(AdresseManagerInterface.$)
   .to(APIAdresseManager)
+  .inSingletonScope();
+
+container
+  .bind<EtablissementBancaireManagerInterface>(
+    EtablissementBancaireManagerInterface.$,
+  )
+  .to(APIEtablissementBancaireManager)
   .inSingletonScope();
 
 export { container };
