@@ -43,8 +43,9 @@ class ImprimanteCourrier
     }
 
     /**
-     * @param bool $extraireObjects extraire la position des objets (à la source des liens `<a href="objet://<nom>" ...>`)
-     *                              sur le document PDF produit. Requis notamment pour le visuel lors de la signature électronique.
+     * @param bool  $extraireObjects extraire la position des objets (à la source des liens `<a href="objet://<nom>" ...>`)
+     *                               sur le document PDF produit. Requis notamment pour le visuel lors de la signature électronique.
+     * @param array $variables       variables supplémentaires transmises au gabarit (ex : un document non rattaché à un dossier)
      *
      * @throws \JsonException
      * @throws \League\Flysystem\FilesystemException
@@ -52,14 +53,14 @@ class ImprimanteCourrier
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function imprimerDocument(Document $document, bool $extraireObjects = false): Document
+    public function imprimerDocument(Document $document, bool $extraireObjects = false, array $variables = []): Document
     {
         // Générer le contenu de la page HTML statique, transmis au script d'impression sur son entrée standard
-        $html = $this->twig->render($document->getType()->getGabarit(), [
+        $html = $this->twig->render($document->getType()->getGabarit(), array_merge([
             'dossier' => $document->getDossier(),
             'corps' => $document->getCorps(),
             'contexte' => $document->getMetaDonnees() ?? [],
-        ]);
+        ], $variables));
 
         // Le script applique le délai à chacune de ses étapes (lancement de Firefox, chargement des polices, impression) :
         // le délai du processus n'est qu'un garde-fou, couvrant le pire cas où chaque étape va jusqu'au bout du délai.

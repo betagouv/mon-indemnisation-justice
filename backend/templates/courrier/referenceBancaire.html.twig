@@ -1,0 +1,148 @@
+{#
+    Relevé d'identité bancaire, sur le modèle de ceux que fournissent les banques, généré à partir d'une `ReferenceBancaire`.
+
+    Variables (cf. `GenerateurReleveIdentiteBancaire::variablesGabarit()`) :
+    - referenceBancaire : la `ReferenceBancaire`
+    - champsRib : les 4 champs du RIB (saisis, ou extraits d'un IBAN français), ou `null` pour un IBAN étranger
+    - iban : l'IBAN (saisi, ou calculé à partir du RIB), ou `null` pour un RIB incomplet
+    - logo : le logo de l'établissement reconnu (`data:` URI), ou `null`
+    - dossier : le dossier, facultatif
+#}
+{% extends 'courrier/_base_courrier.html.twig' %}
+
+{% block style %}
+    <style>
+        .rib {
+            border: 1px solid #000;
+            padding: 0.8cm;
+            margin-top: 1cm;
+            font-family: 'Marianne', sans-serif;
+        }
+
+        .rib h1 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            margin: 0 0 0.6cm;
+        }
+
+        .rib-entete {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1cm;
+        }
+
+        /* Hauteur explicite : les logos SVG n'ont souvent qu'un `viewBox`, sans dimensions intrinsèques */
+        .rib-logo img {
+            display: block;
+            height: 1.4cm;
+            width: auto;
+            max-width: 5cm;
+            object-fit: contain;
+        }
+
+        .rib-ligne {
+            margin: 0.3cm 0;
+        }
+
+        .rib-libelle {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        .rib-valeur {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .rib-code {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.08rem;
+        }
+
+        table.rib-champs {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.5cm 0;
+        }
+
+        table.rib-champs th, table.rib-champs td {
+            border: 1px solid #000;
+            padding: 0.15cm 0.3cm;
+            text-align: center;
+        }
+
+        table.rib-champs th {
+            font-size: 0.7rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            background-color: #eee;
+        }
+
+        .rib-mention {
+            margin-top: 1cm;
+            font-size: 0.75rem;
+            color: #666;
+        }
+    </style>
+{% endblock style %}
+
+{% block pages %}
+    <section class="rib">
+        <div class="rib-entete">
+            <h1>Relevé d'identité bancaire</h1>
+            {% if logo %}
+                <div class="rib-logo"><img src="{{ logo }}" alt="{{ referenceBancaire.nomBanque }}"></div>
+            {% endif %}
+        </div>
+
+        <p class="rib-ligne">
+            <span class="rib-libelle">Titulaire du compte</span>
+            <span class="rib-valeur">{{ referenceBancaire.titulaireDuCompte }}</span>
+        </p>
+
+        <p class="rib-ligne">
+            <span class="rib-libelle">Domiciliation</span>
+            <span class="rib-valeur">{{ referenceBancaire.nomBanque ?: (referenceBancaire.etablissement.nom ?? '') }}</span>
+        </p>
+
+        {% if champsRib %}
+            <table class="rib-champs">
+                <thead>
+                <tr>
+                    <th>Code banque</th>
+                    <th>Code guichet</th>
+                    <th>Numéro de compte</th>
+                    <th>Clé RIB</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="rib-code">
+                    <td>{{ champsRib.codeBanque }}</td>
+                    <td>{{ champsRib.codeGuichet }}</td>
+                    <td>{{ champsRib.numeroCompte }}</td>
+                    <td>{{ champsRib.cleRib }}</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if iban %}
+            <p class="rib-ligne">
+                <span class="rib-libelle">IBAN (International Bank Account Number)</span>
+                <span class="rib-valeur rib-code">{{ iban|split('', 4)|join(' ') }}</span>
+            </p>
+        {% endif %}
+
+        <p class="rib-mention">
+            Document établi le {{ referenceBancaire.dateCreation|format_datetime(locale='fr', pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
+            d'après les coordonnées bancaires déclarées par le requérant{% if dossier and dossier.reference %} dans le cadre du dossier {{ dossier.reference }}{% endif %}.
+            Il n'est pas émis par l'établissement bancaire.
+        </p>
+    </section>
+{% endblock pages %}
+
+{% block piedDePage %}{% endblock piedDePage %}

@@ -39,10 +39,13 @@ enum DocumentType: string
     case TYPE_FORMULAIRE_ACCEPTATION = 'formulaire_acceptation';
     case TYPE_COURRIER_REQUERANT = 'courrier_requerant';
     case TYPE_ARRETE_PAIEMENT = 'arrete_paiement';
+    // Relevé d'identité bancaire généré à partir des coordonnées saisies par le requérant (cf. `ReferenceBancaire`)
+    case TYPE_REFERENCE_BANCAIRE = 'reference_bancaire';
 
     public function estPieceJointe(): bool
     {
-        return !$this->estUnique();
+        // Le relevé d'identité bancaire généré est rattaché à la référence bancaire, et non au dossier
+        return !$this->estUnique() && self::TYPE_REFERENCE_BANCAIRE !== $this;
     }
 
     public function estEditableAgent(): bool
@@ -76,6 +79,7 @@ enum DocumentType: string
             self::TYPE_COURRIER_MINISTERE => 'courrier/decision.html.twig',
             self::TYPE_FORMULAIRE_ACCEPTATION => 'courrier/declarationAcceptation.html.twig',
             self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement.html.twig',
+            self::TYPE_REFERENCE_BANCAIRE => 'courrier/referenceBancaire.html.twig',
 
             default => null,
         };
@@ -98,13 +102,18 @@ enum DocumentType: string
     /**
      * Retourne le nom à donner au fichier pour la génération du document.
      */
-    public function nommerFichier(Dossier $dossier): ?string
+    public function nommerFichier(?Dossier $dossier): ?string
     {
+        if (null === $dossier) {
+            return self::TYPE_REFERENCE_BANCAIRE === $this ? "Relevé d'identité bancaire.pdf" : null;
+        }
+
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",
             self::TYPE_FORMULAIRE_ACCEPTATION => "Formulaire déclaration d'acceptation dossier {$dossier->getReference()}.pdf",
             self::TYPE_COURRIER_REQUERANT => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
             self::TYPE_ARRETE_PAIEMENT => "Arrêté de paiement dossier {$dossier->getReference()}.pdf",
+            self::TYPE_REFERENCE_BANCAIRE => "Relevé d'identité bancaire dossier {$dossier->getReference()}.pdf",
 
             default => null,
         };

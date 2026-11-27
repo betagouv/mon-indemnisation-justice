@@ -292,7 +292,8 @@ class DocumentManager
         $zip = new \ZipArchive();
         $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
 
-        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
+        // `tempnam()` crée un fichier vide : `OVERWRITE` évite de l'ouvrir comme une archive (déprécié)
+        if (true !== $zip->open($zipName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) {
             throw new \RuntimeException('Cannot open '.$zipName);
         }
 
@@ -311,12 +312,35 @@ class DocumentManager
         }
         // Ajouter la pièce d'identité ...
         $this->fusionnerEtAjouterAuZip($zip, "Pièce d'identité.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE));
-        // ...  le RIB ...
-        $this->fusionnerEtAjouterAuZip($zip, "Relevé d'identité bancaire.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_RIB));
+        // ...  le RIB : celui généré d'après les coordonnées saisies (ajouté tel quel, la fusion ne lisant pas les PDF
+        // imprimés par Firefox), sinon ceux téléversés par le requérant ...
+        if (!$this->ajouterReleveIdentiteBancaireGenere($zip, $dossier)) {
+            $this->fusionnerEtAjouterAuZip($zip, "Relevé d'identité bancaire.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_RIB));
+        }
         // ... et le K-Bis
         $this->fusionnerEtAjouterAuZip($zip, 'Extrait K-bis.pdf', $dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS));
 
         return $zip;
+    }
+
+    /**
+     * @return bool si le relevé d'identité bancaire généré d'après la référence bancaire du dossier a été ajouté
+     */
+    private function ajouterReleveIdentiteBancaireGenere(\ZipArchive $zip, Dossier $dossier): bool
+    {
+        $document = $dossier->getReferenceBancaire()?->getDocument();
+
+        if (null === $document) {
+            return false;
+        }
+
+        try {
+            return $zip->addFromString("Relevé d'identité bancaire.pdf", $this->getContenuTexte($document));
+        } catch (FilesystemException|UnableToReadFile $e) {
+            $this->logger->warning("Relevé d'identité bancaire généré introuvable", ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     /**

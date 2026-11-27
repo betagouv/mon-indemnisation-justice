@@ -9,7 +9,10 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\EtablissementBancaire;
 use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
+use MonIndemnisationJustice\Entity\ReferenceBancaire;
+use MonIndemnisationJustice\Service\Banque\GenerateurReleveIdentiteBancaire;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +30,7 @@ class PrevisualiserController extends AbstractController
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly DocumentManager $documentManager,
+        protected readonly GenerateurReleveIdentiteBancaire $generateurReleveIdentiteBancaire,
         #[Autowire(service: 'web_profiler.debug_toolbar')]
         protected readonly ?WebDebugToolbarListener $toolbar = null,
     ) {
@@ -169,6 +173,48 @@ class PrevisualiserController extends AbstractController
                         $dossier->getMontantIndemnisation() ?? 1234.56
                 ),
             ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/reference-bancaire', name: 'agent_beta_previsualiser_reference_bancaire_aleatoire', methods: ['GET'])]
+    public function referenceBancaireAleatoire()
+    {
+        return $this->redirectToRoute(
+            'agent_beta_previsualiser_reference_bancaire',
+            [
+                'dossierId' => $this->em->getRepository(Dossier::class)->getDossierParEtatAleatoire(EtatDossierType::DOSSIER_OK_A_APPROUVER)->getId(),
+            ]
+        );
+    }
+
+    /**
+     * Relevé d'identité bancaire de la référence bancaire du dossier ou, à défaut, d'un RIB d'exemple (option `?iban`
+     * pour un exemple saisi sous forme d'IBAN).
+     */
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/reference-bancaire/{dossierId}', name: 'agent_beta_previsualiser_reference_bancaire', methods: ['GET'])]
+    public function referenceBancaire(
+        Request $request,
+        #[MapEntity(Dossier::class, id: 'dossierId')]
+        Dossier $dossier,
+    ): Response {
+        $this->toolbar?->setMode(WebDebugToolbarListener::DISABLED);
+
+        $referenceBancaire = $dossier->getReferenceBancaire();
+
+        if (null === $referenceBancaire) {
+            $titulaire = $dossier->getRequerantPersonne()?->getNomComplet() ?? 'Jean Dupont';
+            $referenceBancaire = ($request->query->has('iban')
+                ? ReferenceBancaire::depuisIban('FR7630004000031234567890143', $titulaire)
+                : ReferenceBancaire::depuisRib('30004', '00031', '23456789012', '35', $titulaire))
+                ->setNomBanque('BNP Paribas')
+                ->setEtablissement($this->em->find(EtablissementBancaire::class, '30004'));
+        }
+
+        return $this->render(
+            DocumentType::TYPE_REFERENCE_BANCAIRE->getGabarit(),
+            $this->generateurReleveIdentiteBancaire->variablesGabarit($referenceBancaire, $dossier)
         );
     }
 }

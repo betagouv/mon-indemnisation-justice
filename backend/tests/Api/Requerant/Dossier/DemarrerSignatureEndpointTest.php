@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\ReferenceBancaire;
 use MonIndemnisationJustice\Entity\TypeReferenceBancaire;
 use MonIndemnisationJustice\Message\ActivationSignatureRequerant;
+use MonIndemnisationJustice\Message\GenerationReleveIdentiteBancaire;
 use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -88,8 +89,12 @@ class DemarrerSignatureEndpointTest extends WebTestCase
         /** @var InMemoryTransport $transport */
         $transport = self::getContainer()->get('messenger.transport.async');
         $envoyes = array_map(fn ($enveloppe) => $enveloppe->getMessage(), $transport->getSent());
-        $this->assertCount(1, $envoyes);
+        $this->assertCount(2, $envoyes);
         $this->assertInstanceOf(ActivationSignatureRequerant::class, $envoyes[0]);
+        // Le relevé d'identité bancaire est généré de façon asynchrone
+        $this->assertInstanceOf(GenerationReleveIdentiteBancaire::class, $envoyes[1]);
+        $this->assertSame($reference->getId()->toRfc4122(), $envoyes[1]->idReferenceBancaire->toRfc4122());
+        $this->assertSame($dossier->getId(), $envoyes[1]->idDossier);
     }
 
     public function testDemarrerAvecUnIbanEtranger(): void

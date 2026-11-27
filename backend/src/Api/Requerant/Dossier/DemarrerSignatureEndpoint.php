@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\ReferenceBancaire;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Message\ActivationSignatureRequerant;
+use MonIndemnisationJustice\Message\GenerationReleveIdentiteBancaire;
 use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -59,8 +60,9 @@ class DemarrerSignatureEndpoint
         $requeteSignature->setReferenceBancaire($referenceBancaire);
         $this->em->flush();
 
-        // La déclaration d'acceptation est générée par le worker, d'après la référence bancaire de la requête
+        // La déclaration d'acceptation et le relevé d'identité bancaire sont générés par le worker
         $bus->dispatch(new ActivationSignatureRequerant(id: $requeteSignature->getId()));
+        $bus->dispatch(new GenerationReleveIdentiteBancaire(idReferenceBancaire: $referenceBancaire->getId(), idDossier: $dossier->getId()));
 
         return new JsonResponse(
             $this->normalizer->normalize(DossierDto::depuisDossier($requeteSignature->getDossier()), 'json'),

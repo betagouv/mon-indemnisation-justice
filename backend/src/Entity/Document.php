@@ -176,7 +176,7 @@ class Document
     #[Ignore]
     public function getDossier(): ?Dossier
     {
-        return $this->dossiers->first();
+        return $this->dossiers->first() ?: null;
     }
 
     public function getDeclarations(): Collection

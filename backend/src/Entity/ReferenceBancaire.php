@@ -56,6 +56,13 @@ class ReferenceBancaire
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     protected \DateTimeImmutable $dateCreation;
 
+    /**
+     * Relevé d'identité bancaire (PDF) généré à partir de ces coordonnées, transmis au bureau du budget.
+     */
+    #[ORM\OneToOne(targetEntity: Document::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    protected ?Document $document = null;
+
     public function __construct(TypeReferenceBancaire $type, string $titulaireDuCompte)
     {
         $this->type = $type;
@@ -98,6 +105,56 @@ class ReferenceBancaire
         $this->iban = null;
 
         return $this;
+    }
+
+    /**
+     * Les 4 champs du RIB : saisis, ou extraits d'un IBAN français complet (`FRkk BBBBB GGGGG CCCCCCCCCCC KK`).
+     *
+     * @return array{codeBanque: string, codeGuichet: string, numeroCompte: string, cleRib: string}|null
+     */
+    public function getChampsRib(): ?array
+    {
+        if (TypeReferenceBancaire::RIB === $this->type) {
+            return [
+                'codeBanque' => $this->codeBanque ?? '',
+                'codeGuichet' => $this->codeGuichet ?? '',
+                'numeroCompte' => $this->numeroCompte ?? '',
+                'cleRib' => $this->cleRib ?? '',
+            ];
+        }
+
+        if ($this->estIbanFrancais() && 27 === strlen($this->iban)) {
+            return [
+                'codeBanque' => substr($this->iban, 4, 5),
+                'codeGuichet' => substr($this->iban, 9, 5),
+                'numeroCompte' => substr($this->iban, 14, 11),
+                'cleRib' => substr($this->iban, 25, 2),
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * L'IBAN : saisi, ou calculé à partir d'un RIB complet (ISO 13616 : `FR` + clé de contrôle + RIB).
+     */
+    public function getIbanComplet(): ?string
+    {
+        if (TypeReferenceBancaire::IBAN === $this->type) {
+            return $this->iban;
+        }
+
+        $bban = sprintf('%s%s%s%s', $this->codeBanque, $this->codeGuichet, $this->numeroCompte, $this->cleRib);
+
+        if (!preg_match('/^[0-9A-Z]{23}$/', $bban)) {
+            return null;
+        }
+
+        // Lettres converties en nombres (A = 10, …, Z = 35), suivies de `FR00` converti (F = 15, R = 27)
+        $chiffres = preg_replace_callback('/[A-Z]/', fn (array $lettre) => (string) (ord($lettre[0]) - ord('A') + 10), $bban).'152700';
+        $reste = array_reduce(str_split($chiffres, 7), fn (int $reste, string $bloc) => (int) ($reste.$bloc) % 97, 0);
+
+        return sprintf('FR%02d%s', 98 - $reste, $bban);
     }
 
     /**
@@ -209,5 +266,17 @@ class ReferenceBancaire
     public function getDateCreation(): \DateTimeImmutable
     {
         return $this->dateCreation;
+    }
+
+    public function getDocument(): ?Document
+    {
+        return $this->document;
+    }
+
+    public function setDocument(?Document $document): ReferenceBancaire
+    {
+        $this->document = $document;
+
+        return $this;
     }
 }
